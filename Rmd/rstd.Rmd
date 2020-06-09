@@ -1,0 +1,267 @@
+---
+editor_options:
+  chunk_output_type: console
+---
+
+# INTERNAL
+
+## Avoid `R CMD check` notes about undefined global objects used in magrittr pipes
+
+cf. <https://github.com/tidyverse/magrittr/issues/29#issuecomment-74313262>
+
+```{r}
+utils::globalVariables(names = c(".",
+                                 "Key",
+                                 "is_pro"))
+```
+
+## Constants
+
+```{r}
+pins_dirname <- pkgpins::dirname()
+pins_path <- pkgpins::path()
+```
+
+## Package load/unload
+
+```{r}
+.onLoad <- function(libname, pkgname) {
+  pkgpins::register()
+}
+
+.onUnload <- function (libpath) {
+  pkgpins::unregister()
+}
+```
+
+# Test if RStudio is up to date
+
+```{r}
+#' Test if RStudio is up to date
+#'
+#' @inheritParams latest_version
+#' @param stable Set to `FALSE` in order to test against the latest [RStudio preview build](https://rstudio.com/products/rstudio/download/preview/) instead
+#'   of the latest [stable build](https://rstudio.com/products/rstudio/download/).
+#'
+#' @return `TRUE` if the currently running RStudio version is the latest version, `FALSE` otherwise.
+#' @export
+is_uptodate <- function(stable = TRUE,
+                        os = NULL) {
+  
+  rstudioapi::versionInfo()$version >= latest_version(type = rstudioapi::versionInfo()$mode,
+                                                      stable = stable,
+                                                      os = os)
+}
+```
+
+# Get latest RStudio version number
+
+**Remarks:**
+
+- cf. <https://askubuntu.com/questions/1237088/automatizing-rstudio-updates>
+
+- RStudio seems to host binary releases on three different domains:
+
+    - [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop): <https://download1.rstudio.org/>
+    - [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server): <https://download2.rstudio.org/>
+    - [RStudio Desktop/Server Preview](https://rstudio.com/products/rstudio/download/preview/): <https://s3.amazonaws.com/rstudio-ide-build/>
+
+- On each stable release subdomain there's a file named `current.ver` which stores the very latest version number across all releases. But since it doesn't differentiate between the open-source and the proprietary RStudio editions (e.g. [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop) vs. [RStudio Desktop Pro](https://rstudio.com/products/rstudio-desktop-pro/download-commercial/)) and the versions of the two editions can differ, it's not of much use for our purpose.
+
+    To get the content of the `current.ver` file, use:
+    
+    ```r
+    # RStudio Desktop
+    readr::read_lines(file = "https://download1.rstudio.org/current.ver")
+    # RStudio Server
+    readr::read_lines(file = "https://download2.rstudio.org/current.ver")
+    ```
+
+```{r}
+#' Get latest RStudio version number
+#'
+#' @inheritParams releases
+#' @param pro `TRUE` for the proprietary RStudio (Server) Pro edition and `FALSE` for the open-source RStudio (Server) edition.
+#' @param os The OS _codename_ for which the RStudio version was built. If `NULL`, it will be auto-detected for the current system.
+#'
+#' @return A [numeric version][numeric_version()].
+#' @export
+#'
+#' @examples
+#' latest_version(os = "macos",
+#'                use_cache = FALSE)
+latest_version <- function(type = c("desktop", "server"),
+                           stable = TRUE,
+                           pro = FALSE,
+                           os = NULL,
+                           use_cache = TRUE,
+                           cache_lifespan = "1 day") {
+  data <-
+    rlang::arg_match(type) %>%
+    releases(stable = stable,
+             use_cache = use_cache) %>%
+    dplyr::filter(is_pro == checkmate::assert_flag(pro))
+  
+  supported_os <-
+    data[["os"]] %>%
+    unique() %>%
+    setdiff(NA)
+  
+  if (!is.null(os)) {
+    os <- rlang::arg_match(arg = os,
+                           values = supported_os)
+  } else {
+    os <- dplyr::case_when(xfun::is_linux() ~ system2(command = "lsb_release",
+                                                      args = "-cs",
+                                                      stdout = TRUE,
+                                                      stderr = TRUE),
+                           xfun::is_macos() ~ "macos",
+                           xfun::is_windows() ~ "windows")
+    
+    if (!(os %in% supported_os)) {
+      
+      rlang::abort(glue::glue("The RStudio release suited to your Linux distribution ", utils::sessionInfo("base")$running,
+                              " codename \"{os}\" couldn't be auto-detected. Please set `os` to one of ", pal::prose_ls(supported_os,
+                                                                                                                        wrap = '"',
+                                                                                                                        last_separator = " or "), "."))
+    }
+  }
+  
+  data %>%
+    dplyr::filter(os == os) %$%
+    version %>%
+    max() %>%
+    unique() %>%
+    as.numeric_version()
+}
+```
+
+# Get RStudio release metadata
+
+TODO:
+
+- Improve parsing the XML file containing all the info.
+  [AWS `ListObjects`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html#API_ListObjects_ResponseSyntax) only returns the newest 1'000
+  results and `<IsTruncated>true</IsTruncated>` indicates that there are more -> Figure out how to fully retrieve this "paginated" XML!
+  
+  We can use [ListObjectsV2](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html) on the preview URL:
+  <https://s3.amazonaws.com/rstudio-ide-build/?list-type=2>
+  
+  (Neither the ListObjects nor the ListObjectsV2 URL params seem to work on the stable URLs)
+  
+  Then we can set URL param `continuation-token` to the value of `NextContinuationToken` to access the next page.
+  
+  Or even better: Use `delimiter=/` and progress hand over hand by setting `prefix` to the value of `CommonPrefixes`.
+  
+  Or _even_ better: Use `aws.s3::get_bucket("rstudio-ide-build")`!
+  
+  To do the same for the stable release server, we probably first need to figure out the Amazon S3 bucket behind it...?
+
+```{r}
+#' Get RStudio release metadata
+#'
+#' @param type Either `"desktop"` for [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop) or `"server"` for
+#'   [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server) release metadata.
+#' @param stable Set to `FALSE` to retrieve release metadata of [RStudio preview builds](https://rstudio.com/products/rstudio/download/preview/) instead of
+#'   [stable builds](https://rstudio.com/products/rstudio/download/).
+#' @param use_cache Return cached results if possible. If `FALSE`, results are newly fetched (and at the same time the cache gets refreshed).
+#' @param cache_lifespan The duration after which cached results are refreshed (i.e. newly fetched). A valid [lubridate duration][lubridate::as.duration].
+#'   Defaults to 1 day (24 hours). Only relevant if `use_cache = TRUE`.
+#'
+#' @return A [tibble][tibble::tbl_df].
+#' @export
+#'
+#' @examples
+#' releases(type = "server")
+releases <- function(type = c("desktop", "server"),
+                     stable = TRUE,
+                     use_cache = TRUE,
+                     cache_lifespan = "1 day") {
+  
+  type <- rlang::arg_match(type)
+  pin_name <- glue::glue("rstudio_releases_", dplyr::if_else(checkmate::assert_flag(stable),
+                                                             type,
+                                                             "preview"))
+  
+  if (checkmate::assert_flag(use_cache)) {
+    # get cached result if available
+    cached <- pins::pin_find(board = pins_dirname,
+                             name = pin_name)
+    
+    if (nrow(cached) > 0) {
+      result <- pins::pin_get(board = pins_dirname,
+                              name = pin_name)
+      
+      # if cache is older than `cache_lifespan`, invalidate it and get fresh result
+      if (lubridate::now() %>%
+          magrittr::subtract(attr(result,
+                                  which = "pin_date")) %>%
+          magrittr::is_greater_than(lubridate::as.duration(cache_lifespan))) {
+        
+        use_cache <- FALSE
+      }
+      
+    } else {
+      use_cache <- FALSE
+    }
+  }
+  
+  if (!use_cache) {
+    # get fresh result and pin it to pkg user-cache
+    # (we disabled versions support in the board, so no need to clean up)
+    result <-
+      get_releases(type = type,
+                   stable = stable) %>%
+      pal::set_attribute(attribute = "pin_date",
+                         value = lubridate::now()) %>%
+      pins::pin(board = pins_dirname,
+                name = pin_name)
+  }
+  result
+}
+
+get_releases <- function(type,
+                         stable) {
+  
+  stable %>%
+    dplyr::if_else(true = paste0("https://download", dplyr::if_else(type == "desktop", 1L, 2L), ".rstudio.org/"),
+                   false = paste0("https://s3.amazonaws.com/rstudio-ide-build/")) %>%
+    xml2::read_xml() %>%
+    xml2::as_list() %>%
+    purrr::keep(~ .x[["Name"]] == dplyr::if_else(stable,
+                                                 glue::glue("rstudio-{type}"),
+                                                 "rstudio-ide-build")) %>%
+    purrr::chuck("ListBucketResult") %>%
+    purrr::imap(~ { if (.y == "Contents") .x else NULL }) %>%
+    purrr::compact() %>%
+    purrr::map_depth(.depth = 2L,
+                     .f = purrr::flatten_chr) %>%
+    purrr::map_dfr(tibble::as_tibble) %>%
+    dplyr::mutate(is_pro = stringr::str_detect(string = Key,
+                                               pattern = "-pro-"),
+                  os = stringr::str_extract(string = Key,
+                                            pattern = "(?<=^desktop/)[^/]+(?=/)"),
+                  version = Key %>% stringr::str_extract(pattern = "(?i)(?<=rstudio-(pro-)?)\\d+([\\.-]\\d+)*")) %>%
+    dplyr::filter(Key != "current.ver")
+}
+```
+
+# Get RStudio-bundled Pandoc version
+
+```{r}
+#' Determine version of Pandoc bundled with RStudio
+#'
+#' @return A [numeric version][numeric_version()].
+#' @export
+bundled_pandoc_version <- function() {
+  
+  Sys.getenv("RSTUDIO_PANDOC") %>%
+    fs::dir_ls(regexp = "pandoc(\\.exe)?$") %>%
+    system2(args = "-v",
+            stdout = TRUE,
+            stderr = TRUE) %>%
+    dplyr::first() %>%
+    stringr::str_extract("\\d+(\\.\\d+)*") %>%
+    as.numeric_version()
+}
+```

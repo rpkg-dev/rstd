@@ -1,0 +1,33 @@
+---
+output: pal::gitlab_document
+---
+
+# `r paste0(desc::desc_get_field(key = "Package"), ": ", desc::desc_get_field(key = "Title", default = "<No \x60Title\x60 field set in DESCRIPTION!>"))`
+
+`r desc::desc_get_field(key = "Description", default = "<No \x60Description\x60 field set in DESCRIPTION!>")`
+
+## Features
+
+...
+
+## Details
+
+...
+
+## Installation
+```{r, install-snippet-dev, child = pkgsnippets::file("installation-notice_dev-version_gitlab.Rmd")}
+```
+
+## Development
+
+### Literate Programming
+```{r, literate-programming-snippet, child = pkgsnippets::file("literate-programming-notice.Rmd")}
+```
+
+### Coding Style
+```{r, coding-style-snippet, child = pkgsnippets::file("coding-style-notice.Rmd")}
+```
+
+## See also
+
+- The official [**rstudioapi**](https://rstudio.github.io/rstudioapi/) R package containing a handful of useful wrapper functions to access the [RStudio API](https://rstudio.github.io/rstudio-extensions/rstudioapi.html).
