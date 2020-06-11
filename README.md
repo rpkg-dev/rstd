@@ -2,14 +2,6 @@
 
 Get RStudio release metadata and bundled Pandoc version. Test if RStudio is up to date.
 
-## Features
-
-...
-
-## Details
-
-...
-
 ## Installation
 
 To install the latest development version of **rstd**, run the following in R:

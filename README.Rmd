@@ -6,14 +6,6 @@ output: pal::gitlab_document
 
 `r desc::desc_get_field(key = "Description", default = "<No \x60Description\x60 field set in DESCRIPTION!>")`
 
-## Features
-
-...
-
-## Details
-
-...
-
 ## Installation
 ```{r, install-snippet-dev, child = pkgsnippets::file("installation-notice_dev-version_gitlab.Rmd")}
 ```
