@@ -18,7 +18,7 @@ releases(
 \item{stable}{Set to \code{FALSE} to retrieve release metadata of \href{https://rstudio.com/products/rstudio/download/preview/}{RStudio preview builds} instead of
 \href{https://rstudio.com/products/rstudio/download/}{stable builds}.}
 
-\item{use_cache}{Return cached results if possible. If \code{FALSE}, results are newly fetched (and at the same time the cache gets refreshed).}
+\item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
 
 \item{cache_lifespan}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}.
 Defaults to 1 day (24 hours). Only relevant if \code{use_cache = TRUE}.}
@@ -30,5 +30,6 @@ A \link[tibble:tbl_df]{tibble}.
 Get RStudio release metadata
 }
 \examples{
-releases(type = "server")
+releases(type = "server",
+         cache_lifespan = "1 year 2 months 3 weeks 4 days 5 hours 6 minutes 7 seconds")
 }

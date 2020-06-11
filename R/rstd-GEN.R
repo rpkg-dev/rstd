@@ -5,15 +5,10 @@ utils::globalVariables(names = c(".",
                                  "Key",
                                  "is_pro"))
 
-pins_dirname <- pkgpins::dirname()
-pins_path <- pkgpins::path()
-
-.onLoad <- function(libname, pkgname) {
-  pkgpins::register()
-}
+pkg <- utils::packageName()
 
 .onUnload <- function (libpath) {
-  pkgpins::unregister()
+  pkgpins::unregister(pkg = pkg)
 }
 
 #' Test if RStudio is up to date
@@ -53,7 +48,8 @@ latest_version <- function(type = c("desktop", "server"),
   data <-
     rlang::arg_match(type) %>%
     releases(stable = stable,
-             use_cache = use_cache) %>%
+             use_cache = use_cache,
+             cache_lifespan = cache_lifespan) %>%
     dplyr::filter(is_pro == checkmate::assert_flag(pro))
   
   supported_os <-
@@ -62,9 +58,11 @@ latest_version <- function(type = c("desktop", "server"),
     setdiff(NA)
   
   if (!is.null(os)) {
+    
     os <- rlang::arg_match(arg = os,
                            values = supported_os)
   } else {
+    
     os <- dplyr::case_when(xfun::is_linux() ~ system2(command = "lsb_release",
                                                       args = "-cs",
                                                       stdout = TRUE,
@@ -95,7 +93,7 @@ latest_version <- function(type = c("desktop", "server"),
 #'   [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server) release metadata.
 #' @param stable Set to `FALSE` to retrieve release metadata of [RStudio preview builds](https://rstudio.com/products/rstudio/download/preview/) instead of
 #'   [stable builds](https://rstudio.com/products/rstudio/download/).
-#' @param use_cache Return cached results if possible. If `FALSE`, results are newly fetched (and at the same time the cache gets refreshed).
+#' @param use_cache Return cached results if possible. If `FALSE`, results are always newly fetched regardless of `cache_lifespan`.
 #' @param cache_lifespan The duration after which cached results are refreshed (i.e. newly fetched). A valid [lubridate duration][lubridate::as.duration].
 #'   Defaults to 1 day (24 hours). Only relevant if `use_cache = TRUE`.
 #'
@@ -103,7 +101,8 @@ latest_version <- function(type = c("desktop", "server"),
 #' @export
 #'
 #' @examples
-#' releases(type = "server")
+#' releases(type = "server",
+#'          cache_lifespan = "1 year 2 months 3 weeks 4 days 5 hours 6 minutes 7 seconds")
 releases <- function(type = c("desktop", "server"),
                      stable = TRUE,
                      use_cache = TRUE,
@@ -115,39 +114,26 @@ releases <- function(type = c("desktop", "server"),
                                                              "preview"))
   
   if (checkmate::assert_flag(use_cache)) {
-    # get cached result if available
-    cached <- pins::pin_find(board = pins_dirname,
-                             name = pin_name)
     
-    if (nrow(cached) > 0) {
-      result <- pins::pin_get(board = pins_dirname,
-                              name = pin_name)
+    result <- pkgpins::get_obj(id = pin_name,
+                               max_age = cache_lifespan,
+                               pkg = pkg)
+    
+    if (is.null(result)) {
       
-      # if cache is older than `cache_lifespan`, invalidate it and get fresh result
-      if (lubridate::now() %>%
-          magrittr::subtract(attr(result,
-                                  which = "pin_date")) %>%
-          magrittr::is_greater_than(lubridate::as.duration(cache_lifespan))) {
-        
-        use_cache <- FALSE
-      }
-      
-    } else {
       use_cache <- FALSE
     }
   }
   
   if (!use_cache) {
-    # get fresh result and pin it to pkg user-cache
-    # (we disabled versions support in the board, so no need to clean up)
+    
     result <-
       get_releases(type = type,
                    stable = stable) %>%
-      pal::set_attribute(attribute = "pin_date",
-                         value = lubridate::now()) %>%
-      pins::pin(board = pins_dirname,
-                name = pin_name)
+      pkgpins::cache_obj(id = pin_name,
+                         pkg = pkg)
   }
+  
   result
 }
 
