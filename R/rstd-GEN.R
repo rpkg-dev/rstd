@@ -126,7 +126,7 @@ releases <- function(type = c("desktop", "server"),
     fetch <- TRUE
   }
   
-  if (!use_cache | fetch) {
+  if (fetch) {
     
     result <- get_releases(type = type,
                            stable = stable)
