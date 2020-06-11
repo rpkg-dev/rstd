@@ -119,19 +119,23 @@ releases <- function(type = c("desktop", "server"),
                                max_age = cache_lifespan,
                                pkg = pkg)
     
-    if (is.null(result)) {
-      
-      use_cache <- FALSE
-    }
+    fetch <- is.null(result)
+    
+  } else {
+    
+    fetch <- TRUE
   }
   
-  if (!use_cache) {
+  if (!use_cache | fetch) {
     
-    result <-
-      get_releases(type = type,
-                   stable = stable) %>%
-      pkgpins::cache_obj(id = pin_name,
-                         pkg = pkg)
+    result <- get_releases(type = type,
+                           stable = stable)
+  }
+  
+  if (use_cache) {
+    pkgpins::cache_obj(x = result,
+                       id = pin_name,
+                       pkg = pkg)
   }
   
   result
