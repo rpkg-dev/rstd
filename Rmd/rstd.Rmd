@@ -15,7 +15,7 @@ utils::globalVariables(names = c(".",
                                  "is_pro"))
 ```
 
-## Set constansts
+## Constansts
 
 ```{r}
 pkg <- utils::packageName()
