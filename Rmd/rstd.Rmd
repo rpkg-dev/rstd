@@ -25,7 +25,7 @@ pkg <- utils::packageName()
 
 ```{r}
 .onUnload <- function (libpath) {
-  pkgpins::unregister(pkg = pkg)
+  pkgpins::deregister(pkg = pkg)
 }
 ```
 

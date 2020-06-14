@@ -8,7 +8,7 @@ utils::globalVariables(names = c(".",
 pkg <- utils::packageName()
 
 .onUnload <- function (libpath) {
-  pkgpins::unregister(pkg = pkg)
+  pkgpins::deregister(pkg = pkg)
 }
 
 #' Test if RStudio is up to date
