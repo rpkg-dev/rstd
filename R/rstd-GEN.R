@@ -33,7 +33,7 @@ is_uptodate <- function(stable = TRUE,
 #' @param pro `TRUE` for the proprietary RStudio (Server) Pro edition and `FALSE` for the open-source RStudio (Server) edition.
 #' @param os The OS _codename_ for which the RStudio version was built. If `NULL`, it will be auto-detected for the current system.
 #'
-#' @return A [numeric version][numeric_version()].
+#' @return `r pkgsnippets::return_label("version_nr")`
 #' @export
 #'
 #' @examples
@@ -93,11 +93,10 @@ latest_version <- function(type = c("desktop", "server"),
 #'   [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server) release metadata.
 #' @param stable Set to `FALSE` to retrieve release metadata of [RStudio preview builds](https://rstudio.com/products/rstudio/download/preview/) instead of
 #'   [stable builds](https://rstudio.com/products/rstudio/download/).
-#' @param use_cache Return cached results if possible. If `FALSE`, results are always newly fetched regardless of `cache_lifespan`.
-#' @param cache_lifespan The duration after which cached results are refreshed (i.e. newly fetched). A valid [lubridate duration][lubridate::as.duration].
-#'   Defaults to 1 day (24 hours). Only relevant if `use_cache = TRUE`.
+#' @param use_cache `r pkgsnippets::param_label("use_cache")`
+#' @param cache_lifespan `r pkgsnippets::param_label("cache_lifespan")` Defaults to 1 day (24 hours).
 #'
-#' @return A [tibble][tibble::tbl_df].
+#' @return `r pkgsnippets::return_label("data")`
 #' @export
 #'
 #' @examples
@@ -168,7 +167,7 @@ get_releases <- function(type,
 
 #' Determine version of Pandoc bundled with RStudio
 #'
-#' @return A [numeric version][numeric_version()].
+#' @return `r pkgsnippets::return_label("version_nr")`
 #' @export
 bundled_pandoc_version <- function() {
   
