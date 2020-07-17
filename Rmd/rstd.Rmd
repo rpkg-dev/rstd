@@ -79,7 +79,7 @@ is_uptodate <- function(stable = TRUE,
 #' @param pro `TRUE` for the proprietary RStudio (Server) Pro edition and `FALSE` for the open-source RStudio (Server) edition.
 #' @param os The OS _codename_ for which the RStudio version was built. If `NULL`, it will be auto-detected for the current system.
 #'
-#' @return `r pkgsnippets::return_label("version_nr")`
+#' @return `r pkgsnip::return_label("version_nr")`
 #' @export
 #'
 #' @examples
@@ -162,10 +162,10 @@ TODO:
 #'   [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server) release metadata.
 #' @param stable Set to `FALSE` to retrieve release metadata of [RStudio preview builds](https://rstudio.com/products/rstudio/download/preview/) instead of
 #'   [stable builds](https://rstudio.com/products/rstudio/download/).
-#' @param use_cache `r pkgsnippets::param_label("use_cache")`
-#' @param cache_lifespan `r pkgsnippets::param_label("cache_lifespan")` Defaults to 1 day (24 hours).
+#' @param use_cache `r pkgsnip::param_label("use_cache")`
+#' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")` Defaults to 1 day (24 hours).
 #'
-#' @return `r pkgsnippets::return_label("data")`
+#' @return `r pkgsnip::return_label("data")`
 #' @export
 #'
 #' @examples
@@ -240,7 +240,7 @@ get_releases <- function(type,
 ```{r}
 #' Determine version of Pandoc bundled with RStudio
 #'
-#' @return `r pkgsnippets::return_label("version_nr")`
+#' @return `r pkgsnip::return_label("version_nr")`
 #' @export
 bundled_pandoc_version <- function() {
   
