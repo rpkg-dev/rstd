@@ -5,6 +5,14 @@ editor_options:
 
 # INTERNAL
 
+## Package load/unload
+
+```{r}
+.onUnload <- function (libpath) {
+  pkgpins::deregister(pkg = pkg)
+}
+```
+
 ## Avoid `R CMD check` notes about undefined global objects used in magrittr pipes
 
 cf. <https://github.com/tidyverse/magrittr/issues/29#issuecomment-74313262>
@@ -19,14 +27,6 @@ utils::globalVariables(names = c(".",
 
 ```{r}
 pkg <- utils::packageName()
-```
-
-## Package load/unload
-
-```{r}
-.onUnload <- function (libpath) {
-  pkgpins::deregister(pkg = pkg)
-}
 ```
 
 # Test if RStudio is up to date
