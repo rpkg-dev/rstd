@@ -53,19 +53,19 @@ is_uptodate <- function(stable = TRUE,
 
 **Remarks:**
 
-- cf. <https://askubuntu.com/questions/1237088/automatizing-rstudio-updates>
+-   cf. <https://askubuntu.com/questions/1237088/automatizing-rstudio-updates>
 
-- RStudio seems to host binary releases on three different domains:
+-   RStudio seems to host binary releases on three different domains:
 
-    - [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop): <https://download1.rstudio.org/>
-    - [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server): <https://download2.rstudio.org/>
-    - [RStudio Desktop/Server Preview](https://rstudio.com/products/rstudio/download/preview/): <https://s3.amazonaws.com/rstudio-ide-build/>
+    -   [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop): <https://download1.rstudio.org/>
+    -   [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server): <https://download2.rstudio.org/>
+    -   [RStudio Desktop/Server Preview](https://rstudio.com/products/rstudio/download/preview/): <https://s3.amazonaws.com/rstudio-ide-build/>
 
-- On each stable release subdomain there's a file named `current.ver` which stores the very latest version number across all releases. But since it doesn't differentiate between the open-source and the proprietary RStudio editions (e.g. [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop) vs. [RStudio Desktop Pro](https://rstudio.com/products/rstudio-desktop-pro/download-commercial/)) and the versions of the two editions can differ, it's not of much use for our purpose.
+-   On each stable release subdomain there's a file named `current.ver` which stores the very latest version number across all releases. But since it doesn't differentiate between the open-source and the proprietary RStudio editions (e.g. [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop) vs. [RStudio Desktop Pro](https://rstudio.com/products/rstudio-desktop-pro/download-commercial/)) and the versions of the two editions can differ, it's not of much use for our purpose.
 
     To get the content of the `current.ver` file, use:
-    
-    ```r
+
+    ``` {.r}
     # RStudio Desktop
     readr::read_lines(file = "https://download1.rstudio.org/current.ver")
     # RStudio Server
@@ -138,22 +138,19 @@ latest_version <- function(type = c("desktop", "server"),
 
 TODO:
 
-- Improve parsing the XML file containing all the info.
-  [AWS `ListObjects`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html#API_ListObjects_ResponseSyntax) only returns the newest 1'000
-  results and `<IsTruncated>true</IsTruncated>` indicates that there are more -> Figure out how to fully retrieve this "paginated" XML!
-  
-  We can use [ListObjectsV2](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html) on the preview URL:
-  <https://s3.amazonaws.com/rstudio-ide-build/?list-type=2>
-  
-  (Neither the ListObjects nor the ListObjectsV2 URL params seem to work on the stable URLs)
-  
-  Then we can set URL param `continuation-token` to the value of `NextContinuationToken` to access the next page.
-  
-  Or even better: Use `delimiter=/` and progress hand over hand by setting `prefix` to the value of `CommonPrefixes`.
-  
-  Or _even_ better: Use `aws.s3::get_bucket("rstudio-ide-build")`!
-  
-  To do the same for the stable release server, we probably first need to figure out the Amazon S3 bucket behind it...?
+-   Improve parsing the XML file containing all the info. [AWS `ListObjects`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html#API_ListObjects_ResponseSyntax) only returns the newest 1'000 results and `<IsTruncated>true</IsTruncated>` indicates that there are more -\> Figure out how to fully retrieve this "paginated" XML!
+
+    We can use [ListObjectsV2](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html) on the preview URL: <https://s3.amazonaws.com/rstudio-ide-build/?list-type=2>
+
+    (Neither the ListObjects nor the ListObjectsV2 URL params seem to work on the stable URLs)
+
+    Then we can set URL param `continuation-token` to the value of `NextContinuationToken` to access the next page.
+
+    Or even better: Use `delimiter=/` and progress hand over hand by setting `prefix` to the value of `CommonPrefixes`.
+
+    Or *even* better: Use `aws.s3::get_bucket("rstudio-ide-build")`!
+
+    To do the same for the stable release server, we probably first need to figure out the Amazon S3 bucket behind it...?
 
 ```{r}
 #' Get RStudio release metadata

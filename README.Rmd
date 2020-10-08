@@ -7,19 +7,22 @@ output: pal::gitlab_document
 `r pal::desc_value("Description")`
 
 ## Installation
+
 ```{r, install-snippet-dev, child = pkgsnip::snip_path("installation-notice_dev-version_gitlab.Rmd")}
 ```
 
 ## Development
 
 ### R Markdown format
+
 ```{r, rmd-pkg-snippet, child = pkgsnip::snip_path("rmd-package-notice.Rmd")}
 ```
 
 ### Coding style
+
 ```{r, coding-style-snippet, child = pkgsnip::snip_path("coding-style-notice.Rmd")}
 ```
 
 ## See also
+-   The official [**rstudioapi**](https://rstudio.github.io/rstudioapi/) R package containing a handful of useful wrapper functions to access the [RStudio API](https://rstudio.github.io/rstudio-extensions/rstudioapi.html).
 
-- The official [**rstudioapi**](https://rstudio.github.io/rstudioapi/) R package containing a handful of useful wrapper functions to access the [RStudio API](https://rstudio.github.io/rstudio-extensions/rstudioapi.html).
