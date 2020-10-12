@@ -61,7 +61,10 @@ is_uptodate <- function(stable = TRUE,
     -   [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server): <https://download2.rstudio.org/>
     -   [RStudio Desktop/Server Preview](https://rstudio.com/products/rstudio/download/preview/): <https://s3.amazonaws.com/rstudio-ide-build/>
 
--   On each stable release subdomain there's a file named `current.ver` which stores the very latest version number across all releases. But since it doesn't differentiate between the open-source and the proprietary RStudio editions (e.g. [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop) vs. [RStudio Desktop Pro](https://rstudio.com/products/rstudio-desktop-pro/download-commercial/)) and the versions of the two editions can differ, it's not of much use for our purpose.
+-   On each stable release subdomain there's a file named `current.ver` which stores the very latest version number across all releases. But since it doesn't
+    differentiate between the open-source and the proprietary RStudio editions (e.g. [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop)
+    vs. [RStudio Desktop Pro](https://rstudio.com/products/rstudio-desktop-pro/download-commercial/)) and the versions of the two editions can differ, it's not
+    of much use for our purpose.
 
     To get the content of the `current.ver` file, use:
 
@@ -138,9 +141,12 @@ latest_version <- function(type = c("desktop", "server"),
 
 TODO:
 
--   Improve parsing the XML file containing all the info. [AWS `ListObjects`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html#API_ListObjects_ResponseSyntax) only returns the newest 1'000 results and `<IsTruncated>true</IsTruncated>` indicates that there are more -\> Figure out how to fully retrieve this "paginated" XML!
+-   Improve parsing the XML file containing all the info. [AWS
+    `ListObjects`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html#API_ListObjects_ResponseSyntax) only returns the newest 1'000 results
+    and `<IsTruncated>true</IsTruncated>` indicates that there are more -\> Figure out how to fully retrieve this "paginated" XML!
 
-    We can use [ListObjectsV2](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html) on the preview URL: <https://s3.amazonaws.com/rstudio-ide-build/?list-type=2>
+    We can use [ListObjectsV2](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html) on the preview URL:
+    <https://s3.amazonaws.com/rstudio-ide-build/?list-type=2>
 
     (Neither the ListObjects nor the ListObjectsV2 URL params seem to work on the stable URLs)
 
