@@ -180,3 +180,15 @@ bundled_pandoc_version <- function() {
     stringr::str_extract("\\d+(\\.\\d+)*") %>%
     as.numeric_version()
 }
+
+#' List RStudio's R package dependencies' installation status
+#'
+#' @return `r pkgsnip::return_label("data")`
+#' @export
+pkg_status <- function() {
+  
+  rstudioapi::getRStudioPackageDependencies()$name %>%
+    pal::is_pkg_installed() %>%
+    tibble::enframe(name = "package",
+                    value = "is_installed")
+}
