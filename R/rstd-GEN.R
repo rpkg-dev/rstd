@@ -6,8 +6,9 @@
 }
 
 utils::globalVariables(names = c(".",
+                                 "is_pro",
                                  "Key",
-                                 "is_pro"))
+                                 "name"))
 
 pkg <- utils::packageName()
 
@@ -121,12 +122,10 @@ releases <- function(type = c("desktop", "server"),
     fetch <- is.null(result)
     
   } else {
-    
     fetch <- TRUE
   }
   
   if (fetch) {
-    
     result <- get_releases(type = type,
                            stable = stable)
   }
@@ -187,8 +186,9 @@ bundled_pandoc_version <- function() {
 #' @export
 pkg_status <- function() {
   
-  rstudioapi::getRStudioPackageDependencies()$name %>%
-    pal::is_pkg_installed() %>%
+  rstudioapi::getRStudioPackageDependencies() %$%
+    pal::is_pkg_installed(pkg = name,
+                          min_version = version) %>%
     tibble::enframe(name = "package",
                     value = "is_installed")
 }
