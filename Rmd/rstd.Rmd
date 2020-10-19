@@ -59,7 +59,8 @@ is_uptodate <- function(stable = TRUE,
 
     -   [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop): <https://download1.rstudio.org/>
     -   [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server): <https://download2.rstudio.org/>
-    -   [RStudio Desktop/Server Preview](https://rstudio.com/products/rstudio/download/preview/): <https://s3.amazonaws.com/rstudio-ide-build/>
+    -   [RStudio Desktop/Server Preview](https://rstudio.com/products/rstudio/download/preview/) and [RStudio Desktop/Server daily
+        builds](https://dailies.rstudio.com/): <https://s3.amazonaws.com/rstudio-ide-build/>
 
 -   On each stable release subdomain there's a file named `current.ver` which stores the very latest version number across all releases. But since it doesn't
     differentiate between the open-source and the proprietary RStudio editions (e.g. [RStudio Desktop](https://rstudio.com/products/rstudio/#rstudio-desktop)
@@ -74,6 +75,20 @@ is_uptodate <- function(stable = TRUE,
     # RStudio Server
     readr::read_lines(file = "https://download2.rstudio.org/current.ver")
     ```
+
+-   RStudio [provides](https://support.rstudio.com/hc/en-us/articles/203842428-Getting-the-newest-RStudio-builds) canonical URLs for the latest binary releases
+    for every supported OS. Examples:
+
+    -   stable:
+
+        -   DEB: <https://rstudio.org/download/latest/stable/desktop/bionic/rstudio-latest-amd64.deb>
+        -   RPM: <https://rstudio.org/download/latest/stable/desktop/centos8/rstudio-latest-x86_64.rpm>
+        -   EXE: <https://rstudio.org/download/latest/stable/desktop/windows/RStudio-latest.exe>
+        -   DMG: <https://rstudio.org/download/latest/stable/desktop/mac/RStudio-latest.dmg>
+
+    -   preview: <https://rstudio.org/download/latest/preview/desktop/bionic/rstudio-latest-amd64.deb>
+
+    -   daily: <https://rstudio.org/download/latest/daily/desktop/bionic/rstudio-latest-amd64.deb>
 
 ```{r}
 #' Get latest RStudio version number
