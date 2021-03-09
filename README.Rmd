@@ -27,5 +27,3 @@ output: pal::gitlab_document
 
 -   The official [**rstudioapi**](https://rstudio.github.io/rstudioapi/) R package containing a handful of useful wrapper functions to access the [RStudio
     API](https://rstudio.github.io/rstudio-extensions/rstudioapi.html).
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
