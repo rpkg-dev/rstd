@@ -9,7 +9,7 @@ editor_options:
 
 ```{r}
 .onUnload <- function(libpath) {
-  pkgpins::deregister(pkg = pkg)
+  pkgpins::deregister(pkg = this_pkg)
 }
 ```
 
@@ -27,7 +27,7 @@ utils::globalVariables(names = c(".",
 ## Constansts
 
 ```{r}
-pkg <- utils::packageName()
+this_pkg <- utils::packageName()
 ```
 
 # Test if RStudio is up to date
@@ -195,35 +195,23 @@ releases <- function(type = c("desktop", "server"),
                      use_cache = TRUE,
                      cache_lifespan = "1 day") {
   
-  type <- rlang::arg_match(type)
-  pin_name <- glue::glue("rstudio_releases_", dplyr::if_else(checkmate::assert_flag(stable),
-                                                             type,
-                                                             "preview"))
-  
-  if (checkmate::assert_flag(use_cache)) {
+  pkgpins::with_cache(expr = {
     
-    result <- pkgpins::get_obj(id = pin_name,
-                               max_age = cache_lifespan,
-                               pkg = pkg)
-    
-    fetch <- is.null(result)
-    
-  } else {
-    fetch <- TRUE
-  }
-  
-  if (fetch) {
+    type <- rlang::arg_match(type)
+    checkmate::assert_flag(stable)
+    pin_name <- glue::glue("rstudio_releases_", dplyr::if_else(stable,
+                                                               type,
+                                                               "preview"))
     result <- get_releases(type = type,
                            stable = stable)
-  }
-  
-  if (use_cache) {
-    pkgpins::cache_obj(x = result,
-                       id = pin_name,
-                       pkg = pkg)
-  }
-  
-  result
+    
+  },
+  pkg = this_pkg,
+  from_fn = "releases",
+  type,
+  stable,
+  use_cache = use_cache,
+  cache_lifespan = cache_lifespan)
 }
 
 get_releases <- function(type,
