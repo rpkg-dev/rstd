@@ -119,9 +119,9 @@ releases <- function(type = c("desktop", "server"),
                      use_cache = TRUE,
                      cache_lifespan = "1 day") {
   
+  type <- rlang::arg_match(type)
+  
   pkgpins::with_cache(expr = {
-    
-    type <- rlang::arg_match(type)
     checkmate::assert_flag(stable)
     pin_name <- glue::glue("rstudio_releases_", dplyr::if_else(stable,
                                                                type,
@@ -132,7 +132,6 @@ releases <- function(type = c("desktop", "server"),
   },
   pkg = this_pkg,
   from_fn = "releases",
-  type,
   stable,
   use_cache = use_cache,
   cache_lifespan = cache_lifespan)
