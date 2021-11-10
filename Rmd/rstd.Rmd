@@ -8,8 +8,10 @@ editor_options:
 ## Package load/unload
 
 ```{r}
-.onUnload <- function(libpath) {
-  pkgpins::deregister(pkg = this_pkg)
+.onLoad <- function(libname, pkgname) {
+  pkgpins::clear_cache(board = pkgpins::board(pkg = pkgname),
+                       max_age = getOption(paste0(pkgname, ".max_cache_lifespan"),
+                                           default = "30 days"))
 }
 ```
 
@@ -70,7 +72,7 @@ is_uptodate <- function(stable = TRUE,
 
     To get the content of the `current.ver` file, use:
 
-    ``` {.r}
+    ``` r
     # RStudio Desktop
     readr::read_lines(file = "https://download1.rstudio.org/current.ver")
     # RStudio Server
@@ -159,7 +161,7 @@ TODO:
 
 -   Improve parsing the XML file containing all the info. [AWS
     `ListObjects`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html#API_ListObjects_ResponseSyntax) only returns the newest 1'000 results
-    and `<IsTruncated>true</IsTruncated>` indicates that there are more -\> Figure out how to fully retrieve this "paginated" XML!
+    and `<IsTruncated>true</IsTruncated>` indicates that there are more -> Figure out how to fully retrieve this "paginated" XML!
 
     We can use [ListObjectsV2](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html) on the preview URL:
     <https://s3.amazonaws.com/rstudio-ide-build/?list-type=2>
@@ -196,9 +198,10 @@ releases <- function(type = c("desktop", "server"),
                      cache_lifespan = "1 day") {
   
   type <- rlang::arg_match(type)
+  checkmate::assert_flag(stable)
   
   pkgpins::with_cache(expr = {
-    checkmate::assert_flag(stable)
+    
     pin_name <- glue::glue("rstudio_releases_", dplyr::if_else(stable,
                                                                type,
                                                                "preview"))

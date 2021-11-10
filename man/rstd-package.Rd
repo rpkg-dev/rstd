@@ -6,8 +6,7 @@
 \alias{rstd-package}
 \title{rstd: Unofficial Utility Functions Around RStudio}
 \description{
-Get RStudio release metadata and bundled Pandoc
-    version. Test if RStudio is up to date.
+Get RStudio release metadata and bundled Pandoc version. Test if RStudio is up to date.
 }
 \seealso{
 Useful links:

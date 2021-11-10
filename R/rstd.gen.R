@@ -12,8 +12,10 @@
 # 
 # You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-.onUnload <- function(libpath) {
-  pkgpins::deregister(pkg = this_pkg)
+.onLoad <- function(libname, pkgname) {
+  pkgpins::clear_cache(board = pkgpins::board(pkg = pkgname),
+                       max_age = getOption(paste0(pkgname, ".max_cache_lifespan"),
+                                           default = "30 days"))
 }
 
 utils::globalVariables(names = c(".",
@@ -120,9 +122,10 @@ releases <- function(type = c("desktop", "server"),
                      cache_lifespan = "1 day") {
   
   type <- rlang::arg_match(type)
+  checkmate::assert_flag(stable)
   
   pkgpins::with_cache(expr = {
-    checkmate::assert_flag(stable)
+    
     pin_name <- glue::glue("rstudio_releases_", dplyr::if_else(stable,
                                                                type,
                                                                "preview"))
