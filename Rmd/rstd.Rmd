@@ -142,7 +142,7 @@ latest_version <- function(type = c("desktop", "server"),
       rlang::abort(glue::glue("The RStudio release suited to your Linux distribution ", utils::sessionInfo("base")$running,
                               " codename \"{os}\" couldn't be auto-detected. Please set `os` to one of ", pal::prose_ls(supported_os,
                                                                                                                         wrap = '"',
-                                                                                                                        last_separator = " or "), "."))
+                                                                                                                        last_sep = " or "), "."))
     }
   }
   
