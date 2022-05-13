@@ -2,7 +2,7 @@
 # See `README.md#r-markdown-format` for more information on the literate programming approach used applying the R Markdown format.
 
 # rstd: Unofficial Utility Functions Around RStudio
-# Copyright (C) 2021 Salim Brüggemann
+# Copyright (C) 2022 Salim Brüggemann
 # 
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or any later version.
@@ -124,33 +124,26 @@ releases <- function(type = c("desktop", "server"),
   type <- rlang::arg_match(type)
   checkmate::assert_flag(stable)
   
-  pkgpins::with_cache(expr = {
-    
-    pin_name <- glue::glue("rstudio_releases_", dplyr::if_else(stable,
-                                                               type,
-                                                               "preview"))
-    result <- get_releases(type = type,
-                           stable = stable)
-    
-  },
-  pkg = this_pkg,
-  from_fn = "releases",
-  stable,
-  use_cache = use_cache,
-  cache_lifespan = cache_lifespan)
+  pkgpins::with_cache(expr = get_releases(type = type,
+                                          stable = stable),
+                      pkg = this_pkg,
+                      from_fn = "releases",
+                      stable,
+                      use_cache = use_cache,
+                      cache_lifespan = cache_lifespan)
 }
 
 get_releases <- function(type,
                          stable) {
   
   stable %>%
-    dplyr::if_else(true = paste0("https://download", dplyr::if_else(type == "desktop", 1L, 2L), ".rstudio.org/"),
-                   false = paste0("https://s3.amazonaws.com/rstudio-ide-build/")) %>%
+    ifelse(yes = paste0("https://download", ifelse(type == "desktop", 1L, 2L), ".rstudio.org/"),
+           no = paste0("https://s3.amazonaws.com/rstudio-ide-build/")) %>%
     xml2::read_xml() %>%
     xml2::as_list() %>%
-    purrr::keep(~ .x[["Name"]] == dplyr::if_else(stable,
-                                                 glue::glue("rstudio-{type}"),
-                                                 "rstudio-ide-build")) %>%
+    purrr::keep(~ .x[["Name"]] == ifelse(stable,
+                                         glue::glue("rstudio-{type}"),
+                                         "rstudio-ide-build")) %>%
     purrr::chuck("ListBucketResult") %>%
     purrr::imap(~ { if (.y == "Contents") .x else NULL }) %>%
     purrr::compact() %>%

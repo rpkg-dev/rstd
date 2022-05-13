@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://rpkg.dev/rstd/index.html</loc>
+  </url>
+  <url>
+    <loc>https://rpkg.dev/rstd/reference/bundled_pandoc_version.html</loc>
+  </url>
+  <url>
+    <loc>https://rpkg.dev/rstd/reference/is_uptodate.html</loc>
+  </url>
+  <url>
+    <loc>https://rpkg.dev/rstd/reference/latest_version.html</loc>
+  </url>
+  <url>
+    <loc>https://rpkg.dev/rstd/reference/pkg_status.html</loc>
+  </url>
+  <url>
+    <loc>https://rpkg.dev/rstd/reference/releases.html</loc>
+  </url>
+  <url>
+    <loc>https://rpkg.dev/rstd/reference/rstd-package.html</loc>
+  </url>
+</urlset>

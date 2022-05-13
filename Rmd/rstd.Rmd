@@ -32,7 +32,9 @@ utils::globalVariables(names = c(".",
 this_pkg <- utils::packageName()
 ```
 
-# Test if RStudio is up to date
+# EXPORTED
+
+## `is_uptodate`
 
 ```{r}
 #' Test if RStudio is up to date
@@ -52,7 +54,7 @@ is_uptodate <- function(stable = TRUE,
 }
 ```
 
-# Get latest RStudio version number
+## `latest_version`
 
 **Remarks:**
 
@@ -155,13 +157,13 @@ latest_version <- function(type = c("desktop", "server"),
 }
 ```
 
-# Get RStudio release metadata
+## `releases`
 
 TODO:
 
 -   Improve parsing the XML file containing all the info. [AWS
     `ListObjects`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html#API_ListObjects_ResponseSyntax) only returns the newest 1'000 results
-    and `<IsTruncated>true</IsTruncated>` indicates that there are more -> Figure out how to fully retrieve this "paginated" XML!
+    and `<IsTruncated>true</IsTruncated>` indicates that there are more -\> Figure out how to fully retrieve this "paginated" XML!
 
     We can use [ListObjectsV2](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html) on the preview URL:
     <https://s3.amazonaws.com/rstudio-ide-build/?list-type=2>
@@ -200,33 +202,26 @@ releases <- function(type = c("desktop", "server"),
   type <- rlang::arg_match(type)
   checkmate::assert_flag(stable)
   
-  pkgpins::with_cache(expr = {
-    
-    pin_name <- glue::glue("rstudio_releases_", dplyr::if_else(stable,
-                                                               type,
-                                                               "preview"))
-    result <- get_releases(type = type,
-                           stable = stable)
-    
-  },
-  pkg = this_pkg,
-  from_fn = "releases",
-  stable,
-  use_cache = use_cache,
-  cache_lifespan = cache_lifespan)
+  pkgpins::with_cache(expr = get_releases(type = type,
+                                          stable = stable),
+                      pkg = this_pkg,
+                      from_fn = "releases",
+                      stable,
+                      use_cache = use_cache,
+                      cache_lifespan = cache_lifespan)
 }
 
 get_releases <- function(type,
                          stable) {
   
   stable %>%
-    dplyr::if_else(true = paste0("https://download", dplyr::if_else(type == "desktop", 1L, 2L), ".rstudio.org/"),
-                   false = paste0("https://s3.amazonaws.com/rstudio-ide-build/")) %>%
+    ifelse(yes = paste0("https://download", ifelse(type == "desktop", 1L, 2L), ".rstudio.org/"),
+           no = paste0("https://s3.amazonaws.com/rstudio-ide-build/")) %>%
     xml2::read_xml() %>%
     xml2::as_list() %>%
-    purrr::keep(~ .x[["Name"]] == dplyr::if_else(stable,
-                                                 glue::glue("rstudio-{type}"),
-                                                 "rstudio-ide-build")) %>%
+    purrr::keep(~ .x[["Name"]] == ifelse(stable,
+                                         glue::glue("rstudio-{type}"),
+                                         "rstudio-ide-build")) %>%
     purrr::chuck("ListBucketResult") %>%
     purrr::imap(~ { if (.y == "Contents") .x else NULL }) %>%
     purrr::compact() %>%
@@ -242,7 +237,7 @@ get_releases <- function(type,
 }
 ```
 
-# Get RStudio-bundled Pandoc version
+## `bundled_pandoc_version`
 
 ```{r}
 #' Determine version of Pandoc bundled with RStudio
@@ -262,7 +257,7 @@ bundled_pandoc_version <- function() {
 }
 ```
 
-# List RStudio's R package dependencies' installation status
+## `pkg_status`
 
 ```{r}
 #' List RStudio's R package dependencies' installation status

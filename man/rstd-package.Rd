@@ -4,9 +4,9 @@
 \name{rstd-package}
 \alias{rstd}
 \alias{rstd-package}
-\title{rstd: Unofficial Utility Functions Around RStudio}
+\title{rstd: Unofficial Utility Functions Around the RStudio IDE}
 \description{
-Get RStudio release metadata and bundled Pandoc version. Test if RStudio is up to date.
+Get RStudio Desktop release metadata and bundled Pandoc version. Test if RStudio Desktop is up to date.
 }
 \seealso{
 Useful links:

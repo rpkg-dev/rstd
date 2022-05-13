@@ -1,6 +1,10 @@
-# rstd: Unofficial Utility Functions Around RStudio
+# rstd: Unofficial Utility Functions Around the RStudio IDE
 
-Get RStudio release metadata and bundled Pandoc version. Test if RStudio is up to date.
+Get RStudio Desktop release metadata and bundled Pandoc version. Test if RStudio Desktop is up to date.
+
+## Documentation
+
+The documentation of this package is found [here](https://rpkg.dev/rstd).
 
 ## Installation
 
