@@ -1,5 +1,7 @@
 # rstd: Unofficial Utility Functions Around the RStudio IDE
 
+[![CRAN Status](https://r-pkg.org/badges/version/rstd)](https://cran.r-project.org/package=rstd){.pkgdown-release}
+
 Get RStudio Desktop release metadata and bundled Pandoc version. Test if RStudio Desktop is up to date.
 
 ## Installation
@@ -17,7 +19,7 @@ remotes::install_gitlab(repo = "salim_b/r/pkgs/rstd")
 
 ## Usage
 
-The (function) reference is found [here](https://rpkg.dev/rstd/reference).
+The (function) reference is found [here](reference).
 
 ## Development
 

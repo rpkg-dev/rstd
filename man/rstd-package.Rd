@@ -11,6 +11,7 @@ Get RStudio Desktop release metadata and bundled Pandoc version. Test if RStudio
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://rstd.rpkg.dev}
   \item \url{https://gitlab.com/salim_b/r/pkgs/rstd}
   \item Report bugs at \url{https://gitlab.com/salim_b/r/pkgs/rstd/issues}
 }

@@ -1,10 +1,14 @@
 # rstd: Unofficial Utility Functions Around the RStudio IDE
 
+<a href="https://cran.r-project.org/package=rstd" class="pkgdown-release"><img src="https://r-pkg.org/badges/version/rstd" alt="CRAN Status" /></a>
+
 Get RStudio Desktop release metadata and bundled Pandoc version. Test if RStudio Desktop is up to date.
 
 ## Documentation
 
-The documentation of this package is found [here](https://rpkg.dev/rstd).
+[![Netlify Status](https://api.netlify.com/api/v1/badges/ac353053-cecb-49fa-9236-bfcd664e036c/deploy-status)](https://app.netlify.com/sites/rstd-rpkg-dev/deploys)
+
+The documentation of this package is found [here](https://rstd.rpkg.dev).
 
 ## Installation
 

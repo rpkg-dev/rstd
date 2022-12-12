@@ -1,24 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://rpkg.dev/rstd/index.html</loc>
+    <loc>https://rstd.rpkg.dev/dev/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://rpkg.dev/rstd/reference/bundled_pandoc_version.html</loc>
+    <loc>https://rstd.rpkg.dev/dev/TODO.html</loc>
   </url>
   <url>
-    <loc>https://rpkg.dev/rstd/reference/is_uptodate.html</loc>
+    <loc>https://rstd.rpkg.dev/dev/authors.html</loc>
   </url>
   <url>
-    <loc>https://rpkg.dev/rstd/reference/latest_version.html</loc>
+    <loc>https://rstd.rpkg.dev/dev/index.html</loc>
   </url>
   <url>
-    <loc>https://rpkg.dev/rstd/reference/pkg_status.html</loc>
+    <loc>https://rstd.rpkg.dev/dev/reference/bundled_pandoc_version.html</loc>
   </url>
   <url>
-    <loc>https://rpkg.dev/rstd/reference/releases.html</loc>
+    <loc>https://rstd.rpkg.dev/dev/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://rpkg.dev/rstd/reference/rstd-package.html</loc>
+    <loc>https://rstd.rpkg.dev/dev/reference/is_uptodate.html</loc>
+  </url>
+  <url>
+    <loc>https://rstd.rpkg.dev/dev/reference/latest_version.html</loc>
+  </url>
+  <url>
+    <loc>https://rstd.rpkg.dev/dev/reference/pkg_status.html</loc>
+  </url>
+  <url>
+    <loc>https://rstd.rpkg.dev/dev/reference/releases.html</loc>
+  </url>
+  <url>
+    <loc>https://rstd.rpkg.dev/dev/reference/rstd-package.html</loc>
   </url>
 </urlset>
