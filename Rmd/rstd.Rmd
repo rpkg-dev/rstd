@@ -226,8 +226,10 @@ get_releases <- function(type,
     purrr::imap(~ { if (.y == "Contents") .x else NULL }) %>%
     purrr::compact() %>%
     purrr::map_depth(.depth = 2L,
-                     .f = purrr::flatten_chr) %>%
-    purrr::map_dfr(tibble::as_tibble) %>%
+                     .f = purrr::list_c,
+                     ptype = integer()) %>%
+    purrr::map(tibble::as_tibble) %>%
+    purrr::list_rbind() %>%
     dplyr::mutate(is_pro = stringr::str_detect(string = Key,
                                                pattern = "-pro-"),
                   os = stringr::str_extract(string = Key,
