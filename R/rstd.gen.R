@@ -2,7 +2,7 @@
 # See `README.md#r-markdown-format` for more information on the literate programming approach used applying the R Markdown format.
 
 # rstd: Unofficial Utility Functions Around the RStudio IDE
-# Copyright (C) 2022 Salim Brüggemann
+# Copyright (C) 2023 Salim Brüggemann
 # 
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or any later version.
@@ -19,8 +19,12 @@
 }
 
 utils::globalVariables(names = c(".",
+                                 # tidyselect fns
+                                 "everything",
+                                 # other
                                  "is_pro",
-                                 "Key",
+                                 "key",
+                                 "last_modified",
                                  "name"))
 
 this_pkg <- utils::packageName()
@@ -59,12 +63,15 @@ latest_version <- function(type = c("desktop", "server"),
                            os = NULL,
                            use_cache = TRUE,
                            cache_lifespan = "1 day") {
+  
+  checkmate::assert_flag(pro)
+  
   data <-
     rlang::arg_match(type) %>%
     releases(stable = stable,
              use_cache = use_cache,
              cache_lifespan = cache_lifespan) %>%
-    dplyr::filter(is_pro == checkmate::assert_flag(pro))
+    dplyr::filter(is_pro == pro)
   
   supported_os <-
     data[["os"]] %>%
@@ -77,19 +84,24 @@ latest_version <- function(type = c("desktop", "server"),
                            values = supported_os)
   } else {
     
-    os <- dplyr::case_when(xfun::is_linux() ~ system2(command = "lsb_release",
-                                                      args = "-cs",
-                                                      stdout = TRUE,
-                                                      stderr = TRUE),
-                           xfun::is_macos() ~ "macos",
-                           xfun::is_windows() ~ "windows")
+    os <-
+      if (xfun::is_linux()) {
+        system2(command = "lsb_release",
+                args = "-cs",
+                stdout = TRUE,
+                stderr = TRUE)
+      } else if (xfun::is_macos()) {
+        "macos"
+      } else if (xfun::is_windows()) {
+        "windows"
+      } else {
+        cli::cli_abort("Unknown operating system detected.")
+      }
     
     if (!(os %in% supported_os)) {
       
-      rlang::abort(glue::glue("The RStudio release suited to your Linux distribution ", utils::sessionInfo("base")$running,
-                              " codename \"{os}\" couldn't be auto-detected. Please set `os` to one of ", pal::prose_ls(supported_os,
-                                                                                                                        wrap = '"',
-                                                                                                                        last_sep = " or "), "."))
+      cli::cli_abort(paste0("The RStudio release suited to your Linux distribution {.field {utils::sessionInfo('base')$running}} codename {.field {os}} ",
+                            "couldn't be auto-detected. Please set {.arg os} to one of {.or {.val {supported_os}}}."))
     }
   }
   
@@ -135,7 +147,6 @@ releases <- function(type = c("desktop", "server"),
 
 get_releases <- function(type,
                          stable) {
-  
   stable %>%
     ifelse(yes = paste0("https://download", ifelse(type == "desktop", 1L, 2L), ".rstudio.org/"),
            no = paste0("https://s3.amazonaws.com/rstudio-ide-build/")) %>%
@@ -145,19 +156,29 @@ get_releases <- function(type,
                                          glue::glue("rstudio-{type}"),
                                          "rstudio-ide-build")) %>%
     purrr::chuck("ListBucketResult") %>%
-    purrr::imap(~ { if (.y == "Contents") .x else NULL }) %>%
+    purrr::imap(~ {
+      if (.y == "Contents") .x else NULL
+    }) %>%
     purrr::compact() %>%
     purrr::map_depth(.depth = 2L,
-                     .f = purrr::list_c,
-                     ptype = integer()) %>%
+                     .f = unlist) %>%
     purrr::map(tibble::as_tibble) %>%
     purrr::list_rbind() %>%
-    dplyr::mutate(is_pro = stringr::str_detect(string = Key,
+    dplyr::rename_with(.cols = everything(),
+                       .fn = snakecase::to_snake_case) %>%
+    dplyr::mutate(last_modified =
+                    last_modified %>%
+                    clock::naive_time_parse(format = "%Y-%m-%dT%H:%M:%SZ",
+                                            precision = "millisecond") %>%
+                    clock::time_point_round(precision = "second") %>%
+                    clock::as_date_time(zone = "UTC"),
+                  is_pro = stringr::str_detect(string = key,
                                                pattern = "-pro-"),
-                  os = stringr::str_extract(string = Key,
+                  os = stringr::str_extract(string = key,
                                             pattern = "(?<=^desktop/)[^/]+(?=/)"),
-                  version = Key %>% stringr::str_extract(pattern = "(?i)(?<=rstudio-(pro-)?)\\d+([\\.-]\\d+)*")) %>%
-    dplyr::filter(Key != "current.ver")
+                  version = stringr::str_extract(string = key,
+                                                 pattern = "(?i)(?<=rstudio-((pro|server)-)?)\\d+([\\.-]\\d+)*")) %>%
+    dplyr::filter(key != "current.ver")
 }
 
 #' Determine version of Pandoc bundled with RStudio

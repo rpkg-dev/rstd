@@ -1,36 +1,38 @@
 Package: rstd
 Title: Unofficial Utility Functions Around the RStudio IDE
-Version: 0.0.9003
+Version: 0.0.9004
 Authors@R: 
-    person(given = "Salim",
-           family = "Brüggemann",
-           role = c("aut", "cre"),
-           email = "salim-b@pm.me",
+    person("Salim", "Brüggemann", , "salim-b@pm.me", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5329-5987"))
 Description: Get RStudio Desktop release metadata and bundled Pandoc
     version. Test if RStudio Desktop is up to date.
 License: AGPL (>= 3)
 URL: https://rstd.rpkg.dev, https://gitlab.com/salim_b/r/pkgs/rstd
 BugReports: https://gitlab.com/salim_b/r/pkgs/rstd/issues
+Depends: 
+    R (>= 4.1)
 Imports:
     checkmate (>= 2.0.0),
+    cli (>= 3.6.0),
+    clock (>= 0.6.1),
     dplyr (>= 1.0.0),
     fs (>= 1.4.1),
     glue (>= 1.4.1),
-    magrittr (>= 1.5),
-    pal (>= 0.0.9090),
+    magrittr (>= 2.0),
+    pal (>= 0.0.9093),
     pkgpins (>= 0.7.0.9004),
-    purrr (>= 0.3.4),
-    rlang (>= 0.4.6),
+    purrr (>= 1.0.0),
+    rlang (>= 1.0.0),
     rstudioapi (>= 0.11),
+    snakecase (>= 0.11.0),
     stringr (>= 1.4.0),
     tibble (>= 3.0.1),
-    utils (>= 4.0.0),
     xfun (>= 0.14),
     xml2 (>= 1.3.2)
 Suggests: 
-    pkgsnip (>= 0.0.9032),
-    testthat (>= 3.0.0)
+    pkgsnip (>= 0.0.9033),
+    testthat (>= 3.0.0),
+    utils
 Remotes:
     gitlab::salim_b/r/pkgs/pal,
     gitlab::salim_b/r/pkgs/pkgpins,
@@ -39,4 +41,4 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
