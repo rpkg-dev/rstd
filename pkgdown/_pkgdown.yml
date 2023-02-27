@@ -23,3 +23,5 @@ reference:
   - releases
   - bundled_pandoc_version
   - pkg_status
+- title: Miscellaneous
+- contents: pkg_config

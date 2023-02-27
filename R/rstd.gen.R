@@ -13,9 +13,12 @@
 # You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 .onLoad <- function(libname, pkgname) {
-  pkgpins::clear_cache(board = pkgpins::board(pkg = pkgname),
-                       max_age = getOption(paste0(pkgname, ".max_cache_lifespan"),
-                                           default = "30 days"))
+  
+  # clear pkgpins cache
+  tryCatch(expr = pkgpins::clear_cache(board = pkgpins::board(pkg = pkgname),
+                                       max_age = pal::pkg_config_val(key = "global_max_cache_age",
+                                                                     pkg = pkgname)),
+           error = function(e) cli::cli_alert_warning(text = "Failed to clear pkgpins cache on load of {.pkg pkgname}. Error message: {e$message}"))
 }
 
 utils::globalVariables(names = c(".",
@@ -62,7 +65,7 @@ latest_version <- function(type = c("desktop", "server"),
                            pro = FALSE,
                            os = NULL,
                            use_cache = TRUE,
-                           cache_lifespan = "1 day") {
+                           max_cache_age = "1 day") {
   
   checkmate::assert_flag(pro)
   
@@ -70,7 +73,7 @@ latest_version <- function(type = c("desktop", "server"),
     rlang::arg_match(type) %>%
     releases(stable = stable,
              use_cache = use_cache,
-             cache_lifespan = cache_lifespan) %>%
+             max_cache_age = max_cache_age) %>%
     dplyr::filter(is_pro == pro)
   
   supported_os <-
@@ -120,18 +123,18 @@ latest_version <- function(type = c("desktop", "server"),
 #' @param stable Set to `FALSE` to retrieve release metadata of [RStudio preview builds](https://rstudio.com/products/rstudio/download/preview/) instead of
 #'   [stable builds](https://rstudio.com/products/rstudio/download/).
 #' @param use_cache `r pkgsnip::param_label("use_cache")`
-#' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")` Defaults to 1 day (24 hours).
+#' @param max_cache_age `r pkgsnip::param_label("max_cache_age")` Defaults to 1 day (24 hours).
 #'
 #' @return `r pkgsnip::return_label("data")`
 #' @export
 #'
 #' @examples
 #' releases(type = "server",
-#'          cache_lifespan = "1 year 2 months 3 weeks 4 days 5 hours 6 minutes 7 seconds")
+#'          max_cache_age = "1 year 2 months 3 weeks 4 days 5 hours 6 minutes 7 seconds")
 releases <- function(type = c("desktop", "server"),
                      stable = TRUE,
                      use_cache = TRUE,
-                     cache_lifespan = "1 day") {
+                     max_cache_age = "1 day") {
   
   type <- rlang::arg_match(type)
   checkmate::assert_flag(stable)
@@ -142,7 +145,7 @@ releases <- function(type = c("desktop", "server"),
                       from_fn = "releases",
                       stable,
                       use_cache = use_cache,
-                      cache_lifespan = cache_lifespan)
+                      max_cache_age = max_cache_age)
 }
 
 get_releases <- function(type,
@@ -209,3 +212,20 @@ pkg_status <- function() {
     tibble::enframe(name = "package",
                     value = "is_installed")
 }
+
+#' `r this_pkg` package configuration metadata
+#'
+#' A [tibble][tibble::tbl_df] with metadata of all possible `r this_pkg` package configuration options. See [pal::pkg_config_val()] for more information.
+#'
+#' @format `r pkgsnip::return_label("data_cols", cols = colnames(pkg_config))`
+#' @export
+#'
+#' @examples
+#' rstd::pkg_config
+pkg_config <-
+  tibble::tibble(key = character(),
+                 default_value = list(),
+                 description = character()) %>%
+  tibble::add_row(key = "global_max_cache_age",
+                  default_value = list("30 days"),
+                  description = pkgsnip::md_snip("opt_global_max_cache_age"))

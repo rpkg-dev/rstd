@@ -1,3 +1,11 @@
+#' @section Package configuration:
+#'
+#' `r pkgsnip::md_snip("pkg_config", pkg = "rstd")`
+#'
+#' ```{r, echo = FALSE}
+#' pal::print_pkg_config("rstd")
+#' ```
+#'
 #' @keywords internal
 #' @importFrom magrittr %>%
 #' @importFrom magrittr %<>%

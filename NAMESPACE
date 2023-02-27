@@ -3,6 +3,7 @@
 export(bundled_pandoc_version)
 export(is_uptodate)
 export(latest_version)
+export(pkg_config)
 export(pkg_status)
 export(releases)
 importFrom(magrittr,"%$%")

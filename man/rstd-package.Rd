@@ -8,6 +8,15 @@
 \description{
 Get RStudio Desktop release metadata and bundled Pandoc version. Test if RStudio Desktop is up to date.
 }
+\section{Package configuration}{
+
+
+Some of rstd's functionality is controlled via package-specific global configuration which can either be set via \R \link{options} or \href{https://en.wikipedia.org/wiki/Environment_variable}{environment variables} (the former take precedence). This configuration includes:\tabular{llll}{
+   \strong{Description} \tab \strong{R option} \tab \strong{Environment variable} \tab \strong{Default value} \cr
+   Maximal timespan to preserve the package's \href{https://pkgpins.rpkg.dev/}{pkgpins} cache. Cache entries older than this will be deleted upon package loading. \tab \code{rstd.global_max_cache_age} \tab \code{RSTD_GLOBAL_MAX_CACHE_AGE} \tab \code{"30 days"} \cr
+}
+}
+
 \seealso{
 Useful links:
 \itemize{

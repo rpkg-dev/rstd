@@ -8,7 +8,7 @@ releases(
   type = c("desktop", "server"),
   stable = TRUE,
   use_cache = TRUE,
-  cache_lifespan = "1 day"
+  max_cache_age = "1 day"
 )
 }
 \arguments{
@@ -18,9 +18,9 @@ releases(
 \item{stable}{Set to \code{FALSE} to retrieve release metadata of \href{https://rstudio.com/products/rstudio/download/preview/}{RStudio preview builds} instead of
 \href{https://rstudio.com/products/rstudio/download/}{stable builds}.}
 
-\item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
+\item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{max_cache_age}.}
 
-\item{cache_lifespan}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Only relevant if \code{use_cache = TRUE}. Defaults to 1 day (24 hours).}
+\item{max_cache_age}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Use \code{Inf} to disable cache expiry. Only relevant if \code{use_cache = TRUE}. Defaults to 1 day (24 hours).}
 }
 \value{
 A \link[tibble:tbl_df-class]{tibble}.
@@ -30,5 +30,5 @@ Get RStudio release metadata
 }
 \examples{
 releases(type = "server",
-         cache_lifespan = "1 year 2 months 3 weeks 4 days 5 hours 6 minutes 7 seconds")
+         max_cache_age = "1 year 2 months 3 weeks 4 days 5 hours 6 minutes 7 seconds")
 }
