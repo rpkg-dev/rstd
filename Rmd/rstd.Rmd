@@ -314,11 +314,5 @@ pkg_status <- function() {
 #'
 #' @examples
 #' rstd::pkg_config
-pkg_config <-
-  tibble::tibble(key = character(),
-                 default_value = list(),
-                 description = character()) %>%
-  tibble::add_row(key = "global_max_cache_age",
-                  default_value = list("30 days"),
-                  description = pkgsnip::md_snip("opt_global_max_cache_age"))
+"pkg_config"
 ```
