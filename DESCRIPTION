@@ -7,8 +7,8 @@ Authors@R:
 Description: Get RStudio Desktop release metadata and bundled Pandoc
     version. Test if RStudio Desktop is up to date.
 License: AGPL (>= 3)
-URL: https://rstd.rpkg.dev, https://gitlab.com/salim_b/r/pkgs/rstd
-BugReports: https://gitlab.com/salim_b/r/pkgs/rstd/issues
+URL: https://rstd.rpkg.dev, https://gitlab.com/rpkg.dev/rstd
+BugReports: https://gitlab.com/rpkg.dev/rstd/issues
 Depends: 
     R (>= 4.1)
 Imports:
@@ -34,9 +34,9 @@ Suggests:
     testthat (>= 3.0.0),
     utils
 Remotes:
-    gitlab::salim_b/r/pkgs/pal,
-    gitlab::salim_b/r/pkgs/pkgpins,
-    gitlab::salim_b/r/pkgs/pkgsnip
+    gitlab::rpkg.dev/pal,
+    gitlab::rpkg.dev/pkgpins,
+    gitlab::rpkg.dev/pkgsnip
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true

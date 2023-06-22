@@ -21,8 +21,8 @@ Some of rstd's functionality is controlled via package-specific global configura
 Useful links:
 \itemize{
   \item \url{https://rstd.rpkg.dev}
-  \item \url{https://gitlab.com/salim_b/r/pkgs/rstd}
-  \item Report bugs at \url{https://gitlab.com/salim_b/r/pkgs/rstd/issues}
+  \item \url{https://gitlab.com/rpkg.dev/rstd}
+  \item Report bugs at \url{https://gitlab.com/rpkg.dev/rstd/issues}
 }
 
 }
