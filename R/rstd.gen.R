@@ -38,10 +38,10 @@ this_pkg <- utils::packageName()
 #' @param stable Set to `FALSE` in order to test against the latest [RStudio preview build](https://rstudio.com/products/rstudio/download/preview/) instead
 #'   of the latest [stable build](https://rstudio.com/products/rstudio/download/).
 #'
-#' @return `TRUE` if the currently running RStudio version is the latest version, `FALSE` otherwise.
+#' @return `TRUE` if the currently running RStudio version is greater or equal to the latest version, `FALSE` otherwise.
 #' @export
-is_uptodate <- function(stable = TRUE,
-                        os = NULL) {
+is_latest <- function(stable = TRUE,
+                      os = NULL) {
   
   rstudioapi::versionInfo()$version >= latest_version(type = rstudioapi::versionInfo()$mode,
                                                       stable = stable,
@@ -54,7 +54,7 @@ is_uptodate <- function(stable = TRUE,
 #' @param pro `TRUE` for the proprietary RStudio (Server) Pro edition and `FALSE` for the open-source RStudio (Server) edition.
 #' @param os The OS _codename_ for which the RStudio version was built. If `NULL`, it will be auto-detected for the current system.
 #'
-#' @return `r pkgsnip::return_label("version_nr")`
+#' @return `r pkgsnip::return_lbl("num_vrsn")`
 #' @export
 #'
 #' @examples
@@ -122,10 +122,10 @@ latest_version <- function(type = c("desktop", "server"),
 #'   [RStudio Server](https://rstudio.com/products/rstudio/#rstudio-server) release metadata.
 #' @param stable Set to `FALSE` to retrieve release metadata of [RStudio preview builds](https://rstudio.com/products/rstudio/download/preview/) instead of
 #'   [stable builds](https://rstudio.com/products/rstudio/download/).
-#' @param use_cache `r pkgsnip::param_label("use_cache")`
-#' @param max_cache_age `r pkgsnip::param_label("max_cache_age")` Defaults to 1 day (24 hours).
+#' @param use_cache `r pkgsnip::param_lbl("use_cache")`
+#' @param max_cache_age `r pkgsnip::param_lbl("max_cache_age")` Defaults to 1 day (24 hours).
 #'
-#' @return `r pkgsnip::return_label("data")`
+#' @return `r pkgsnip::return_lbl("tibble")`
 #' @export
 #'
 #' @examples
@@ -186,7 +186,7 @@ get_releases <- function(type,
 
 #' Determine version of Pandoc bundled with RStudio
 #'
-#' @return `r pkgsnip::return_label("version_nr")`
+#' @return `r pkgsnip::return_lbl("num_vrsn")`
 #' @export
 bundled_pandoc_version <- function() {
   
@@ -202,7 +202,7 @@ bundled_pandoc_version <- function() {
 
 #' List RStudio's R package dependencies' installation status
 #'
-#' @return `r pkgsnip::return_label("data")`
+#' @return `r pkgsnip::return_lbl("tibble")`
 #' @export
 pkg_status <- function() {
   
@@ -217,7 +217,7 @@ pkg_status <- function() {
 #'
 #' A [tibble][tibble::tbl_df] with metadata of all possible `r this_pkg` package configuration options. See [pal::pkg_config_val()] for more information.
 #'
-#' @format `r pkgsnip::return_label("data_cols", cols = colnames(pkg_config))`
+#' @format `r pkgsnip::return_lbl("tibble_cols", cols = colnames(pkg_config))`
 #' @export
 #'
 #' @examples

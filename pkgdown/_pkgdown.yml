@@ -18,7 +18,7 @@ template:
 url: https://rstd.rpkg.dev
 reference:
 - contents:
-  - is_uptodate
+  - is_latest
   - latest_version
   - releases
   - bundled_pandoc_version

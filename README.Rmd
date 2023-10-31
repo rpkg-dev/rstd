@@ -3,8 +3,10 @@ output: pal::gitlab_document
 ---
 
 ```{r}
-#| label: init
+#| label: setup
 #| include: false
+library(magrittr,
+        include.only = c("%>%", "%<>%", "%T>%", "%!>%", "%$%"))
 
 knitr::opts_knit$set(root.dir = getwd())
 ```
@@ -20,11 +22,11 @@ knitr::opts_knit$set(root.dir = getwd())
 #| eval: !expr '!isTRUE(getOption("pal.build_readme.is_pkgdown"))'
 #| results: asis
 #| echo: false
-pkgsnip::md_snip(name = "pkgdown_notice") %>%
+pkgsnip::md_snip(id = "pkgdown_notice") %>%
   paste0("## Documentation\n\n",
          "[![Netlify Status](https://api.netlify.com/api/v1/badges/ac353053-cecb-49fa-9236-bfcd664e036c/deploy-status)]",
          "(https://app.netlify.com/sites/rstd-rpkg-dev/deploys)\n\n",
-         .) %>%
+         .) |>
   pal::cat_lines()
 ```
 
@@ -40,8 +42,8 @@ pkgsnip::md_snip(name = "pkgdown_notice") %>%
 #| eval: !expr isTRUE(getOption("pal.build_readme.is_pkgdown"))
 #| results: asis
 #| echo: false
-pkgsnip::md_snip(name = "usage_notice") %>%
-  paste0("## Usage\n\n", .) %>%
+pkgsnip::md_snip(id = "usage_notice") %>%
+  paste0("## Usage\n\n", .) |>
   pal::cat_lines()
 ```
 
