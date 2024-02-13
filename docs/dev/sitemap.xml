@@ -13,7 +13,10 @@
     <loc>https://rstd.rpkg.dev/dev/index.html</loc>
   </url>
   <url>
-    <loc>https://rstd.rpkg.dev/dev/reference/bundled_pandoc_version.html</loc>
+    <loc>https://rstd.rpkg.dev/dev/reference/bundled_cli_path.html</loc>
+  </url>
+  <url>
+    <loc>https://rstd.rpkg.dev/dev/reference/bundled_cli_vrsn.html</loc>
   </url>
   <url>
     <loc>https://rstd.rpkg.dev/dev/reference/index.html</loc>

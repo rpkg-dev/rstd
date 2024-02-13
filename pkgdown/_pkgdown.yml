@@ -21,7 +21,8 @@ reference:
   - is_latest
   - latest_version
   - releases
-  - bundled_pandoc_version
+  - bundled_cli_path
+  - bundled_cli_vrsn
   - pkg_status
 - title: Miscellaneous
 - contents: pkg_config

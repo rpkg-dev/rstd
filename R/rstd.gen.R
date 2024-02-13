@@ -2,7 +2,7 @@
 # See `README.md#r-markdown-format` for more information on the literate programming approach used applying the R Markdown format.
 
 # rstd: Unofficial Utility Functions Around the RStudio IDE
-# Copyright (C) 2023 Salim Brüggemann
+# Copyright (C) 2024 Salim Brüggemann
 # 
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or any later version.
@@ -31,6 +31,12 @@ utils::globalVariables(names = c(".",
                                  "name"))
 
 this_pkg <- utils::packageName()
+
+all_bundled_tools <- c("dart-sass",
+                       "deno",
+                       "esbuild",
+                       "pandoc",
+                       "quarto")
 
 #' Test if RStudio is up to date
 #'
@@ -67,26 +73,22 @@ latest_version <- function(type = c("desktop", "server"),
                            use_cache = TRUE,
                            max_cache_age = "1 day") {
   
+  type <- rlang::arg_match(type)
   checkmate::assert_flag(pro)
   
   data <-
-    rlang::arg_match(type) %>%
+    type |>
     releases(stable = stable,
              use_cache = use_cache,
-             max_cache_age = max_cache_age) %>%
+             max_cache_age = max_cache_age) |>
     dplyr::filter(is_pro == pro)
   
   supported_os <-
-    data[["os"]] %>%
-    unique() %>%
+    data[["os"]] |>
+    unique() |>
     setdiff(NA)
   
-  if (!is.null(os)) {
-    
-    os <- rlang::arg_match(arg = os,
-                           values = supported_os)
-  } else {
-    
+  if (is.null(os)) {
     os <-
       if (xfun::is_linux()) {
         system2(command = "lsb_release",
@@ -106,13 +108,16 @@ latest_version <- function(type = c("desktop", "server"),
       cli::cli_abort(paste0("The RStudio release suited to your Linux distribution {.field {utils::sessionInfo('base')$running}} codename {.field {os}} ",
                             "couldn't be auto-detected. Please set {.arg os} to one of {.or {.val {supported_os}}}."))
     }
+  } else {
+    os <- rlang::arg_match(arg = os,
+                           values = supported_os)
   }
   
-  data %>%
+  data |>
     dplyr::filter(os == os) %$%
-    version %>%
-    max() %>%
-    unique() %>%
+    version |>
+    max() |>
+    unique() |>
     as.numeric_version()
 }
 
@@ -150,53 +155,108 @@ releases <- function(type = c("desktop", "server"),
 
 get_releases <- function(type,
                          stable) {
-  stable %>%
+  stable |>
     ifelse(yes = paste0("https://download", ifelse(type == "desktop", 1L, 2L), ".rstudio.org/"),
-           no = paste0("https://s3.amazonaws.com/rstudio-ide-build/")) %>%
-    xml2::read_xml() %>%
-    xml2::as_list() %>%
-    purrr::keep(~ .x[["Name"]] == ifelse(stable,
-                                         glue::glue("rstudio-{type}"),
-                                         "rstudio-ide-build")) %>%
-    purrr::chuck("ListBucketResult") %>%
-    purrr::imap(~ {
-      if (.y == "Contents") .x else NULL
-    }) %>%
-    purrr::compact() %>%
+           no = paste0("https://s3.amazonaws.com/rstudio-ide-build/")) |>
+    xml2::read_xml() |>
+    xml2::as_list() |>
+    purrr::keep(\(x) x[["Name"]] == ifelse(stable,
+                                           glue::glue("rstudio-{type}"),
+                                           "rstudio-ide-build")) |>
+    purrr::chuck("ListBucketResult") |>
+    purrr::imap(\(x, i) {
+      if (i == "Contents") x else NULL
+    }) |>
+    purrr::compact() |>
     purrr::map_depth(.depth = 2L,
-                     .f = unlist) %>%
-    purrr::map(tibble::as_tibble) %>%
-    purrr::list_rbind() %>%
+                     .f = unlist) |>
+    purrr::map(tibble::as_tibble) |>
+    purrr::list_rbind() |>
     dplyr::rename_with(.cols = everything(),
-                       .fn = snakecase::to_snake_case) %>%
+                       .fn = snakecase::to_snake_case) |>
     dplyr::mutate(last_modified =
-                    last_modified %>%
+                    last_modified |>
                     clock::naive_time_parse(format = "%Y-%m-%dT%H:%M:%SZ",
-                                            precision = "millisecond") %>%
-                    clock::time_point_round(precision = "second") %>%
+                                            precision = "millisecond") |>
+                    clock::time_point_round(precision = "second") |>
                     clock::as_date_time(zone = "UTC"),
                   is_pro = stringr::str_detect(string = key,
-                                               pattern = "-pro-"),
+                                               pattern = stringr::fixed("-pro-")),
                   os = stringr::str_extract(string = key,
                                             pattern = "(?<=^desktop/)[^/]+(?=/)"),
                   version = stringr::str_extract(string = key,
-                                                 pattern = "(?i)(?<=rstudio-((pro|server)-)?)\\d+([\\.-]\\d+)*")) %>%
+                                                 pattern = "(?i)(?<=rstudio-((pro|server)-)?)\\d+([\\.-]\\d+)*")) |>
     dplyr::filter(key != "current.ver")
 }
 
-#' Determine version of Pandoc bundled with RStudio
+#' Get path to CLI tool bundled with RStudio
+#'
+#' Returns the filesytem path to one of the command-line interface (CLI) tools bundled with RStudio, like [Quarto](https://quarto.org/),
+#' [Pandoc](https://pandoc.org/), [Dart Sass](https://sass-lang.com/dart-sass/), etc.
+#'
+#' @param tool Tool name. One of `r pal::enum_fn_param_defaults(param = "tool", fn = bundled_cli_path)`.
+#'
+#' @return `r pkgsnip::return_lbl("path")`
+#' @export
+#'
+#' @examples
+#' rstd::bundled_cli_path(tool = "pandoc")
+bundled_cli_path <- function(tool = all_bundled_tools) {
+  
+  tool <- rlang::arg_match(tool)
+  
+  dir_tool <- Sys.getenv("RSTUDIO_PANDOC")
+  
+  if (nchar(dir_tool) == 0L) {
+    cli::cli_abort(paste0("The required {.href [environment variable](https://en.wikipedia.org/wiki/Environment_variable)} {.envvar RSTUDIO_PANDOC} is not ",
+                          "set. Note that running this function outside of RStudio is not supported."))
+  }
+  
+  switch(EXPR = tool,
+         `dart-sass` = fs::dir_ls(path = fs::path(dir_tool, "dart-sass"),
+                                  type = "file",
+                                  regexp = "sass(\\.exe)?$"),
+         deno =
+           dir_tool |>
+           fs::dir_ls(type = "directory",
+                      glob = "*/deno-*") |>
+           dplyr::first() |>
+           fs::dir_ls(type = "file",
+                      regexp = "deno(\\.exe)?$"),
+         esbuild = fs::dir_ls(path = dir_tool,
+                              type = "file",
+                              regexp = "esbuild(\\.exe)?$"),
+         pandoc = fs::dir_ls(path = dir_tool,
+                             type = "file",
+                             regexp = "pandoc(\\.exe)?$"),
+         quarto = fs::dir_ls(path = fs::path_dir(dir_tool),
+                             type = "file",
+                             regexp = "quarto(\\.exe)?$"),
+         cli::cli_abort("Handling {.arg tool} {.val {tool}} is not yet implemented.",
+                        .internal = TRUE)) |>
+    dplyr::first()
+}
+
+#' Determine version of CLI tool bundled with RStudio
+#'
+#' Determines the version of one of the command-line interface (CLI) tools bundled with RStudio, like [Quarto](https://quarto.org/),
+#' [Pandoc](https://pandoc.org/), [Dart Sass](https://sass-lang.com/dart-sass/), etc.
+#'
+#' @inheritParams bundled_cli_path
 #'
 #' @return `r pkgsnip::return_lbl("num_vrsn")`
 #' @export
-bundled_pandoc_version <- function() {
+#'
+#' @examples
+#' rstd::bundled_cli_vrsn(tool = "dart-sass")
+bundled_cli_vrsn <- function(tool = all_bundled_tools) {
   
-  Sys.getenv("RSTUDIO_PANDOC") %>%
-    fs::dir_ls(regexp = "pandoc(\\.exe)?$") %>%
-    system2(args = "-v",
+  bundled_cli_path(tool = tool) |>
+    system2(args = "--version",
             stdout = TRUE,
-            stderr = TRUE) %>%
-    dplyr::first() %>%
-    stringr::str_extract("\\d+(\\.\\d+)*") %>%
+            stderr = TRUE) |>
+    dplyr::first() |>
+    stringr::str_extract("\\d+(\\.\\d+)*") |>
     as.numeric_version()
 }
 
@@ -208,7 +268,7 @@ pkg_status <- function() {
   
   rstudioapi::getRStudioPackageDependencies() %$%
     pal::is_pkg_installed(pkg = name,
-                          min_version = version) %>%
+                          min_version = version) |>
     tibble::enframe(name = "package",
                     value = "is_installed")
 }
