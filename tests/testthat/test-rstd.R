@@ -7,7 +7,7 @@ test_that("`bundled_cli_path()` basically works", {
 
   all_bundled_tools |>
     purrr::walk(\(tool) {
-      expect_vector(object = rstd::bundled_cli_path(tool = tool),
+      expect_vector(object = bundled_cli_path(tool = tool),
                     size = 1L,
                     ptype = fs::path())
     })
@@ -17,7 +17,7 @@ test_that("`bundled_cli_vrsn()` basically works", {
 
   all_bundled_tools |>
     purrr::walk(\(tool) {
-      expect_vector(object = rstd::bundled_cli_vrsn(tool = tool),
+      expect_vector(object = bundled_cli_vrsn(tool = tool),
                     size = 1L,
                     ptype = numeric_version(NULL))
     })

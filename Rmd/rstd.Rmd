@@ -298,31 +298,32 @@ bundled_cli_path <- function(tool = all_bundled_tools) {
   
   tool <- rlang::arg_match(tool)
   
-  dir_tool <- Sys.getenv("RSTUDIO_PANDOC")
+  dir_tools <- Sys.getenv("RSTUDIO_PANDOC")
   
-  if (nchar(dir_tool) == 0L) {
+  if (nchar(dir_tools) == 0L) {
     cli::cli_abort(paste0("The required {.href [environment variable](https://en.wikipedia.org/wiki/Environment_variable)} {.envvar RSTUDIO_PANDOC} is not ",
                           "set. Note that running this function outside of RStudio is not supported."))
   }
   
   switch(EXPR = tool,
-         `dart-sass` = fs::dir_ls(path = fs::path(dir_tool, "dart-sass"),
+         `dart-sass` = fs::dir_ls(path = dir_tools,
+                                  recurse = TRUE,
                                   type = "file",
                                   regexp = "sass(\\.exe)?$"),
-         deno =
-           dir_tool |>
-           fs::dir_ls(type = "directory",
-                      glob = "*/deno-*") |>
-           dplyr::first() |>
-           fs::dir_ls(type = "file",
-                      regexp = "deno(\\.exe)?$"),
-         esbuild = fs::dir_ls(path = dir_tool,
+         deno = fs::dir_ls(path = dir_tools,
+                           recurse = TRUE,
+                           type = "file",
+                           regexp = "deno(\\.exe)?$"),
+         esbuild = fs::dir_ls(path = dir_tools,
+                              recurse = TRUE,
                               type = "file",
                               regexp = "esbuild(\\.exe)?$"),
-         pandoc = fs::dir_ls(path = dir_tool,
+         pandoc = fs::dir_ls(path = dir_tools,
+                             recurse = TRUE,
                              type = "file",
                              regexp = "pandoc(\\.exe)?$"),
-         quarto = fs::dir_ls(path = fs::path_dir(dir_tool),
+         quarto = fs::dir_ls(path = fs::path_dir(fs::path_dir(dir_tools)),
+                             recurse = TRUE,
                              type = "file",
                              regexp = "quarto(\\.exe)?$"),
          cli::cli_abort("Handling {.arg tool} {.val {tool}} is not yet implemented.",
