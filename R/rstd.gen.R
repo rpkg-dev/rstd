@@ -173,7 +173,7 @@ get_releases <- function(type,
     purrr::map(tibble::as_tibble) |>
     purrr::list_rbind() |>
     dplyr::rename_with(.cols = everything(),
-                       .fn = snakecase::to_snake_case) |>
+                       .fn = heck::to_snake_case) |>
     dplyr::mutate(last_modified =
                     last_modified |>
                     clock::naive_time_parse(format = "%Y-%m-%dT%H:%M:%SZ",
