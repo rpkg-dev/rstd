@@ -30,15 +30,17 @@ Imports:
     xfun (>= 0.14),
     xml2 (>= 1.3.2)
 Suggests: 
+    pkgdown.tpl (>= 0.0.9000),
     pkgsnip (>= 0.0.9037),
     testthat (>= 3.0.0),
     utils
 Remotes:
     gitlab::rpkg.dev/pal,
+    gitlab::rpkg.dev/pkgdown.tpl,
     gitlab::rpkg.dev/pkgpins,
     gitlab::rpkg.dev/pkgsnip
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2.9000
