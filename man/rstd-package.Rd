@@ -6,7 +6,7 @@
 \alias{rstd-package}
 \title{rstd: Unofficial Utility Functions Around the RStudio IDE}
 \description{
-Get RStudio Desktop release metadata and bundled Pandoc version. Test if RStudio Desktop is up to date.
+Get RStudio Desktop release metadata and information on bundled CLI tools. Test if RStudio Desktop is up to date.
 }
 \section{Package configuration}{
 

@@ -73,6 +73,10 @@ is_latest <- function(stable = TRUE,
 
 ## `latest_version`
 
+TODO:
+
+-   Update this fn to use the latest URLs.
+
 NOTES:
 
 -   cf. <https://askubuntu.com/questions/1237088/automatizing-rstudio-updates>
