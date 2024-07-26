@@ -1,9 +1,9 @@
 #' @section Package configuration:
 #'
-#' `r pkgsnip::md_snip("pkg_config", pkg = "rstd")`
+#' `r pkgsnip::md_snip(id = "pkg_config", pkg = this_pkg)`
 #'
 #' ```{r, echo = FALSE}
-#' pal::print_pkg_config("rstd")
+#' pal::print_pkg_config(this_pkg)
 #' ```
 #'
 #' @keywords internal
