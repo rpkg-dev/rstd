@@ -10,7 +10,7 @@ bundled_cli_vrsn(tool = all_bundled_tools)
 \item{tool}{Tool name. One of \code{"dart-sass"}, \code{"deno"}, \code{"esbuild"}, \code{"pandoc"} or \code{"quarto"}.}
 }
 \value{
-A \link[=numeric_version]{numeric version}.
+A \link[base:numeric_version]{numeric version}.
 }
 \description{
 Determines the version of one of the command-line interface (CLI) tools bundled with RStudio, like \href{https://quarto.org/}{Quarto},
