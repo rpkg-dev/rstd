@@ -2,9 +2,9 @@
 
 export(bundled_cli_path)
 export(bundled_cli_vrsn)
+export(funky_config)
 export(is_latest)
 export(latest_version)
-export(pkg_config)
 export(pkg_status)
 export(releases)
 importFrom(magrittr,"%!>%")

@@ -10,4 +10,4 @@ reference:
   - bundled_cli_vrsn
   - pkg_status
 - title: Miscellaneous
-- contents: pkg_config
+- contents: funky_config

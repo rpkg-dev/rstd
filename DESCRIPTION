@@ -17,6 +17,7 @@ Imports:
     clock (>= 0.6.1),
     dplyr (>= 1.0.0),
     fs (>= 1.4.1),
+    funky (>= 0.0.9000),
     glue (>= 1.4.1),
     heck (>= 0.1.1),
     magrittr (>= 2.0),
@@ -34,6 +35,7 @@ Suggests:
     testthat (>= 3.0.0),
     utils
 Remotes:
+    gitlab::rpkg.dev/funky,
     gitlab::rpkg.dev/pal,
     gitlab::rpkg.dev/pkgpins,
     gitlab::rpkg.dev/pkgsnip
