@@ -2,13 +2,13 @@ Package: rstd
 Title: Unofficial Utility Functions Around the RStudio IDE
 Version: 0.0.9005
 Authors@R: 
-    person("Salim", "Brüggemann", , "salim-b@pm.me", role = c("aut", "cre"),
+    person("Salim", "Brüggemann", , "salim@rpkg.dev", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5329-5987"))
 Description: Get RStudio Desktop release metadata and information on
     bundled CLI tools. Test if RStudio Desktop is up to date.
 License: AGPL (>= 3)
 URL: https://rstd.rpkg.dev, https://gitlab.com/rpkg.dev/rstd
-BugReports: https://gitlab.com/rpkg.dev/rstd/issues
+BugReports: https://gitlab.com/rpkg.dev/rstd/-/issues
 Depends: 
     R (>= 4.4)
 Imports:
